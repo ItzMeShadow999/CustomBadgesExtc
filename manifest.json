@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "CustomBadges for Discord",
+  "version": "13.0.0",
+  "description": "Cross-client custom profile badges on Discord — tooltips, popup cards, and a toolbar-popup dashboard for editing/publishing your own badge.",
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Custom Badges",
+    "default_icon": {
+      "16": "icon16.png",
+      "32": "icon32.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://discord.com/*", "https://*.discord.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ],
+  "host_permissions": [
+    "https://custom-badges.shadow-164.workers.dev/*",
+    "https://discord.com/*",
+    "https://*.discord.com/*"
+  ]
+}

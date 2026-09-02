@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Custom Badges</title>
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        background: #000000;
+        width: 420px;
+        height: 600px;
+        overflow: hidden; /* the dashboard's own inner panel scrolls, not the popup body */
+    }
+    #ub-dashboard-root {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    /* Themed scrollbars (WebKit/Blink - Chrome, Edge, Brave, Opera) */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: #4752C4 #0a0a0a;
+    }
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #0a0a0a;
+    }
+    ::-webkit-scrollbar-thumb {
+        background-color: #4752C4;
+        border-radius: 8px;
+        border: 2px solid #0a0a0a;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: #5865F2;
+    }
+    ::-webkit-scrollbar-corner {
+        background: #0a0a0a;
+    }
+    ::-webkit-scrollbar-button {
+        display: none;
+        height: 0;
+        width: 0;
+    }
+</style>
+</head>
+<body>
+    <div id="ub-dashboard-root"></div>
+    <script src="popup.js"></script>
+</body>
+</html>
