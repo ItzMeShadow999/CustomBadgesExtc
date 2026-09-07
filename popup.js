@@ -2,12 +2,6 @@
     'use strict';
     const API_BASE = "https://custom-badges.shadow-164.workers.dev";
 
-    // --- Message bridge to the content script (content.js) --------------------
-    // The dashboard now runs in the toolbar popup, a separate execution
-    // context from discord.com. Anything that needs to read the Discord page
-    // (who's logged in) or touch the live badge display (cache/rescan) has to
-    // go through chrome.tabs.sendMessage to the content script instead of
-    // calling it directly.
     async function getDiscordTab() {
         const tabs = await chrome.tabs.query({ url: ["https://discord.com/*", "https://*.discord.com/*"] });
         if (!tabs.length) return null;
