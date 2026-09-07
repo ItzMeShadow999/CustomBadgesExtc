@@ -64,6 +64,15 @@ If Discord was already open in a tab, refresh it so the content script attaches.
 
 Pull or re-download the latest files into the same folder, then go back to the extensions page and click the **Reload** (circular arrow) icon on the CustomBadges card.
 
+## Installing on Firefox
+
+1. Open `about:debugging#/runtime/this-firefox`.
+2. Click **Load Temporary Add-on...**.
+3. Select the `manifest.json` file in this folder.
+4. Reload any open Discord tabs so the content script attaches.
+
+Temporary add-ons are removed when Firefox restarts. For a persistent installation, the extension must be packaged and signed by Mozilla or installed in a Firefox development build.
+
 ## Troubleshooting
 
 - **Icon greyed out / nothing happens on Discord**: make sure the tab is on `discord.com` and hard-refresh (Ctrl/Cmd+Shift+R).
