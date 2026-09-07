@@ -1,10 +1,11 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/ItzMeShadow999/My-assets/main/chromium.svg" width="150" height="150" alt="Chromium">
+<img src="https://i.ibb.co/7JmfXLTd/Chat-GPT-Image-Sep-7-2026-04-26-36-PM.png" width="150" height="150" alt="Chromium">
 
 # CustomBadges — Extension
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome-Extension-5E97F6?style=for-the-badge&logo=chromium&logoColor=white)](https://github.com/ItzMeShadow999/CustomBadgesExtc)
+[![Firefox Add-on](https://img.shields.io/badge/Firefox-Extension-FF7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white)](https://github.com/ItzMeShadow999/CustomBadgesExtc)
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-4285F4?style=for-the-badge&logo=chromium&logoColor=white)](manifest.json)
 [![License](https://img.shields.io/badge/License-View%20Repo-3367D6?style=for-the-badge&logo=chromium&logoColor=white)](https://github.com/ItzMeShadow999/CustomBadgesExtc)
 
@@ -13,6 +14,7 @@
 [![Brave](https://img.shields.io/badge/Brave-FB542B?style=for-the-badge&logo=brave&logoColor=white)](brave://extensions)
 [![Opera](https://img.shields.io/badge/Opera-FF1B2D?style=for-the-badge&logo=opera&logoColor=white)](opera://extensions)
 [![Vivaldi](https://img.shields.io/badge/Vivaldi-EF3939?style=for-the-badge&logo=vivaldi&logoColor=white)](vivaldi://extensions)
+[![Firefox](https://img.shields.io/badge/Firefox-FF7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white)](about:debugging#/runtime/this-firefox)
 
 [![Backend](https://img.shields.io/badge/Backend-Cloudflare%20Workers-F38020?style=flat-square&logo=cloudflare&logoColor=white&labelColor=5C6370)](https://custom-badges.shadow-164.workers.dev)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?style=flat-square&logo=discord&logoColor=white&labelColor=5C6370)](https://discord.gg/uqQv2bXyTd)
