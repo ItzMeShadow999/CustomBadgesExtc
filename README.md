@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://i.ibb.co/7JmfXLTd/Chat-GPT-Image-Sep-7-2026-04-26-36-PM.png" width="150" height="150" alt="Chromium">
+<img src="https://i.ibb.co/4wWxMb9t/image.png" width="150" height="150" alt="Chromium">
 
 # CustomBadges — Extension
 
