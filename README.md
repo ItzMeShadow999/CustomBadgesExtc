@@ -37,6 +37,10 @@ This extension isn't on the Chrome Web Store, so you'll load it as an unpacked e
 
 - Click the green **Code** button on this repo → **Download ZIP**, then unzip it somewhere you'll remember.
 - Or, if you have git: `git clone https://github.com/ItzMeShadow999/CustomBadgesExtc.git`
+- Or, for firefox download from: https://addons.mozilla.org/en-US/firefox/addon/custombadges-for-discord/ 
+
+> [!TIP]
+> If you download from [Addons store](https://addons.mozilla.org/en-US/firefox/addon/custombadges-for-discord/), skip all the steps of Installing on Firefox.
 
 ### 2. Open your browser's extensions page
 
