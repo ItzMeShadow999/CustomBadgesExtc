@@ -28,6 +28,50 @@ Cross-client custom profile badges on Discord: tooltips, popup cards, and a tool
 
 Works alongside Vencord, Equicord, BetterDiscord, and plain discord.com.
 
+## Quick Install (Windows)
+
+Open **PowerShell** and run:
+
+```powershell
+irm https://raw.githubusercontent.com/ItzMeShadow999/CustomBadgesExtc/main/install.ps1 | iex
+```
+
+The installer walks you through everything:
+
+- ◆ Pick your browser: **Chrome**, **Edge**, **Brave**, **Opera**, **Vivaldi** or **Firefox**
+- ◆ Downloads the extension files to `%LOCALAPPDATA%\CustomBadgesExtc` with a live progress line (Firefox skips this and opens the official add-on page instead)
+- ◆ Opens that folder, copies its path to your clipboard and opens your browser's extensions page
+
+Browsers do not allow silent installs of unpacked extensions, so two clicks are left for you:
+
+1. Turn on **Developer mode** (switch in the top right of the extensions page).
+2. Click **Load unpacked** and pick the folder (its path is already on your clipboard).
+
+Then pin the CustomBadges icon and refresh your Discord tab.
+
+To update, run the same command again, then click the **Reload** arrow on the CustomBadges card.
+
+### ▪ Skip the prompts
+
+Set any of these environment variables in the same PowerShell window before running the installer:
+
+| Variable | Values | What it does |
+|---|---|---|
+| `CB_BROWSER` | `chrome`, `edge`, `brave`, `opera`, `vivaldi` or `firefox` | Skips the browser menu |
+| `CB_DIR` | a folder path | Where the extension files are saved (default `%LOCALAPPDATA%\CustomBadgesExtc`) |
+
+Example:
+
+```powershell
+$env:CB_BROWSER='edge'; irm https://raw.githubusercontent.com/ItzMeShadow999/CustomBadgesExtc/main/install.ps1 | iex
+```
+
+### ▪ Requirements and notes
+
+- Windows 10 or 11 with PowerShell 5.1 or newer. macOS and Linux users should use the manual steps below.
+- The banner uses true color. If your console is too narrow or does not support it, a plain title is used instead.
+- Read the script before running it: [install.ps1](https://github.com/ItzMeShadow999/CustomBadgesExtc/blob/main/install.ps1)
+
 ## Installing on Chromium browsers (Chrome, Edge, Brave, Opera, Vivaldi)
 
 This extension isn't on the Chrome Web Store, so you'll load it as an unpacked extension (developer mode). Takes about a minute.
@@ -58,7 +102,7 @@ Toggle **Developer mode** on. It's usually a switch in the top-right corner of t
 
 ### 4. Load the extension
 
-Click **Load unpacked**, then select the folder you unzipped/cloned in step 1 (the one containing `manifest.json`).
+Click **Load unpacked**, then select the **`extension`** folder inside the one you unzipped/cloned in step 1 (the one containing `manifest.json`).
 
 The CustomBadges icon should now appear in your toolbar. Pin it for easy access.
 
@@ -74,7 +118,7 @@ Pull or re-download the latest files into the same folder, then go back to the e
 
 1. Open `about:debugging#/runtime/this-firefox`.
 2. Click **Load Temporary Add-on...**.
-3. Select the `manifest.json` file in this folder.
+3. Select the `manifest.json` file inside the `extension` folder.
 4. Reload any open Discord tabs so the content script attaches.
 
 Temporary add-ons are removed when Firefox restarts. For a persistent installation, the extension must be packaged and signed by Mozilla or installed in a Firefox development build.
@@ -82,7 +126,7 @@ Temporary add-ons are removed when Firefox restarts. For a persistent installati
 ## Troubleshooting
 
 - **Icon greyed out / nothing happens on Discord**: make sure the tab is on `discord.com` and hard-refresh (Ctrl/Cmd+Shift+R).
-- **"Manifest file is missing or unreadable"**: double-check you selected the folder *containing* `manifest.json`, not a parent or child folder.
+- **"Manifest file is missing or unreadable"**: double-check you selected the folder *containing* `manifest.json` (the `extension` folder), not a parent or child folder.
 - **Extension disappears after a browser restart**: some Chromium browsers periodically disable unpacked extensions for security. Just re-enable it on the extensions page.
 
 ## Notes
