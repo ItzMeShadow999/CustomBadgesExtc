@@ -10,15 +10,15 @@ $AmoUrl = 'https://addons.mozilla.org/en-US/firefox/addon/custombadges-for-disco
 $Files = @(
     'LICENSE',
     'README.md',
-    'background.js',
-    'content.js',
-    'icon128.png',
-    'icon16.png',
-    'icon32.png',
-    'icon48.png',
-    'manifest.json',
-    'popup.html',
-    'popup.js'
+    'extension/background.js',
+    'extension/content.js',
+    'extension/icon128.png',
+    'extension/icon16.png',
+    'extension/icon32.png',
+    'extension/icon48.png',
+    'extension/manifest.json',
+    'extension/popup.html',
+    'extension/popup.js'
 )
 
 $SymSec  = [string][char]0x00A7
@@ -220,7 +220,7 @@ Ok $dir
 
 $base = "https://raw.githubusercontent.com/$Owner/$Repo/$Branch/"
 $targets = @()
-foreach ($f in $Files) { $targets += @{ Src = $f; Dest = (Join-Path $dir $f) } }
+foreach ($f in $Files) { $targets += @{ Src = $f; Dest = (Join-Path $dir (Split-Path $f -Leaf)) } }
 $secs = Download-Files $base $targets
 Ok "Extension files ($($targets.Count) files, ${secs}s) copied to $dir"
 
