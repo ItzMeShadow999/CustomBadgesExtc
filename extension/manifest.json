@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "CustomBadges for Discord",
-  "version": "13.0.0",
+  "version": "13.1.0",
   "description": "Cross-client custom profile badges on Discord — tooltips, popup cards, and a toolbar-popup dashboard for editing/publishing your own badge.",
   "browser_specific_settings": {
     "gecko": {
