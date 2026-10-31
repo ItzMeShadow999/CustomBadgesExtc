@@ -5,6 +5,7 @@
   const badgeCache = new Map;
   const imageSourceCache = new Map;
   const MARKER = "data-cb-remote-v11";
+  const SELF_ID_KEY = "cb-dashboard-self-id";
   function log(...a) {
     console.log("[CustomBadges]", ...a);
   }
@@ -404,6 +405,9 @@
       roots.add(anc);
     });
     roots.forEach(process);
+    try {
+      injectDirectoryBadge();
+    } catch (e) {}
   }
   const KNOWN_STATUS_SUFFIXES = [ "Online", "Idle", "Away", "Do Not Disturb", "Streaming", "Invisible", "Offline" ];
   const USERNAME_TOKEN_RE = /^@?[a-z0-9._]{2,32}$/;
@@ -519,6 +523,201 @@
       return false;
     }
   });
+  const DIRECTORY_GRID_SELECTOR = '[data-list-id="badge-directory-owned"]';
+  const DIRECTORY_ATTR = "data-cb-directory";
+  const DIRECTORY_WARM_MAX_ATTEMPTS = 30;
+  const DIRECTORY_RARITY_LABEL = "Mythic";
+  let _directorySelection = null;
+  function ownBadgeInfo() {
+    const me = getCurrentUser();
+    if (!me) return null;
+    const entry = badgeCache.get(me.id);
+    const data = entry && entry.data;
+    if (!data || !data.imageUrl) return null;
+    const style = data.style || {};
+    const rawDate = style.firstUsedDate || data.firstRequestAt;
+    const date = rawDate ? new Date(rawDate) : null;
+    return {
+      raw: data.imageUrl,
+      imageUrl: imageSourceCache.get(data.imageUrl) || data.imageUrl,
+      name: formatBadgeName(data.description || "Custom Badge", style.appendTag),
+      date: date && !isNaN(date.getTime()) ? date : null
+    };
+  }
+  function buildDirectoryPanel(info) {
+    const panel = document.createElement("div");
+    panel.id = "cb-badge-details";
+    panel.setAttribute("role", "tabpanel");
+    panel.style.cssText = "display:flex;align-items:center;gap:16px;padding:16px 4px;color:var(--text-default, #dbdee1);";
+    const img = document.createElement("img");
+    img.src = info.imageUrl;
+    img.alt = "";
+    img.referrerPolicy = "no-referrer";
+    img.draggable = false;
+    img.style.cssText = "width:80px;height:80px;object-fit:contain;flex-shrink:0;";
+    const col = document.createElement("div");
+    col.style.cssText = "display:flex;flex-direction:column;gap:4px;min-width:0;";
+    const muted = "font-size:14px;line-height:18px;color:var(--text-muted, #949ba4);";
+    const rows = [ [ info.name, "font-size:20px;font-weight:700;line-height:24px;color:var(--header-primary, #f2f3f5);" ], [ DIRECTORY_RARITY_LABEL, "font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:var(--text-muted, #949ba4);" ], [ "CustomBadges User", "font-size:14px;line-height:18px;" ], [ "Custom Badges", muted ] ];
+    if (info.date) rows.push([ "Unlocked " + info.date.toLocaleDateString(), muted ]);
+    rows.forEach(([text, css]) => {
+      const row = document.createElement("div");
+      row.textContent = text;
+      row.style.cssText = css;
+      col.appendChild(row);
+    });
+    panel.append(img, col);
+    return panel;
+  }
+  function buildNativePanel(source, info) {
+    try {
+      const clone = source.cloneNode(true);
+      clone.id = "cb-badge-details";
+      clone.style.display = "";
+      const img = clone.querySelector('img[class*="badgeGraphic"]');
+      const title = clone.querySelector("h2");
+      const line = clone.querySelector('[class*="badgeAccessoryLine"]');
+      const rar = clone.querySelector('[class*="rarity-"]');
+      const raritySeg = rar && rar.closest('[class*="badgeAccessorySegment"]');
+      const textSegs = Array.from(clone.querySelectorAll('[class*="badgeAccessorySegment"]')).filter(s => s !== raritySeg);
+      if (!img || !title || !line || !textSegs.length) return null;
+      const setText = (seg, text) => {
+        const el = seg.querySelector('[class*="badgeAccessoryText"]');
+        if (el) el.textContent = text;
+      };
+      const dot = clone.querySelector('svg[class*="badgeAccessoryDot"]');
+      img.src = info.imageUrl;
+      img.referrerPolicy = "no-referrer";
+      img.style.objectFit = "contain";
+      title.textContent = info.name;
+      setText(textSegs[0], "Custom Badges");
+      textSegs.slice(1).forEach(s => s.remove());
+      if (info.date) {
+        const seg = textSegs[0].cloneNode(true);
+        if (dot) seg.prepend(dot.cloneNode(true));
+        setText(seg, "Unlocked " + info.date.toLocaleDateString(undefined, {
+          year: "2-digit",
+          month: "numeric",
+          day: "numeric"
+        }));
+        textSegs[0].after(seg);
+      }
+      if (rar) {
+        rar.className = rar.className.replace(/rarity-[a-z]+(?=_)/, "rarity-mythic");
+        const label = rar.querySelector('[class*="label"]');
+        if (label) label.textContent = DIRECTORY_RARITY_LABEL;
+      }
+      const bd = clone.querySelector('[class*="badgeDetails__"]');
+      if (bd) Array.from(bd.children).slice(1).forEach(c => c.remove());
+      const card = clone.querySelector('[class*="descriptionCard__"]');
+      if (card) Array.from(card.children).slice(1).forEach(c => c.remove());
+      clone.querySelectorAll('[class*="legacyLabel"]').forEach(el => el.remove());
+      const descs = Array.from(clone.querySelectorAll('[class*="descriptionText__"]'));
+      if (descs[0]) descs[0].textContent = "CustomBadges User";
+      descs.slice(1).forEach(el => el.remove());
+      return clone;
+    } catch (e) {
+      return null;
+    }
+  }
+  function deselectDirectoryBadge() {
+    const s = _directorySelection;
+    _directorySelection = null;
+    if (!s) return;
+    if (s.panel) s.panel.remove();
+    if (s.details) s.details.style.display = s.detailsDisplay;
+    if (s.slot && s.slot.isConnected) {
+      s.slot.className = s.slotClass;
+      s.slot.setAttribute("aria-selected", "false");
+    }
+    if (s.native && s.native.isConnected) {
+      s.native.className = s.nativeClass;
+      s.native.setAttribute("aria-selected", "true");
+    }
+  }
+  function selectDirectoryBadge(grid, slot, info) {
+    if (_directorySelection) return;
+    const native = grid.querySelector(`[role="tab"][aria-selected="true"]:not([${DIRECTORY_ATTR}])`);
+    const selectedToken = native && Array.from(native.classList).find(c => /Selected/.test(c));
+    const root = document.getElementById("badge-details");
+    const scroller = root && (root.matches('[class*="detailScroller"]') ? root : root.querySelector('[class*="detailScroller"]'));
+    const details = scroller || root;
+    const panel = scroller && buildNativePanel(scroller, info) || buildDirectoryPanel(info);
+    _directorySelection = {
+      slot: slot,
+      slotClass: slot.className,
+      native: native,
+      nativeClass: native ? native.className : "",
+      details: details,
+      detailsDisplay: details ? details.style.display : "",
+      panel: panel
+    };
+    if (native && selectedToken) {
+      native.classList.remove(selectedToken);
+      native.setAttribute("aria-selected", "false");
+    }
+    if (selectedToken) slot.classList.add(selectedToken);
+    slot.setAttribute("aria-selected", "true");
+    if (details) {
+      details.style.display = "none";
+      details.insertAdjacentElement("afterend", panel);
+    } else {
+      grid.insertAdjacentElement("afterend", panel);
+    }
+  }
+  function injectDirectoryBadge() {
+    if (_directorySelection && !_directorySelection.slot.isConnected) _directorySelection = null;
+    const grid = document.querySelector(DIRECTORY_GRID_SELECTOR);
+    if (!grid) return;
+    const info = ownBadgeInfo();
+    let slot = grid.querySelector(`[${DIRECTORY_ATTR}]`);
+    const key = info ? `${info.imageUrl}|${info.name}|${info.date ? info.date.getTime() : ""}` : "";
+    if (slot && info && slot.dataset.cbKey === key) return;
+    if (slot) {
+      deselectDirectoryBadge();
+      slot.remove();
+    }
+    if (!info) return;
+    if (!imageSourceCache.has(info.raw) && /^https?:/.test(info.raw)) getImageSource(info.raw).then(injectDirectoryBadge);
+    const template = grid.querySelector(`[role="tab"]:not([${DIRECTORY_ATTR}])`);
+    if (!template) return;
+    slot = template.cloneNode(true);
+    Array.from(slot.classList).filter(c => /Selected/.test(c)).forEach(c => slot.classList.remove(c));
+    slot.setAttribute(DIRECTORY_ATTR, "1");
+    slot.dataset.cbKey = key;
+    slot.id = "badge-tab-cb";
+    slot.tabIndex = -1;
+    slot.setAttribute("aria-label", info.name);
+    slot.setAttribute("aria-selected", "false");
+    slot.setAttribute("data-list-item-id", `badge-directory-owned___item-${grid.querySelectorAll('[role="tab"]').length}`);
+    const icon = slot.querySelector("img");
+    if (icon) {
+      icon.src = info.imageUrl;
+      icon.referrerPolicy = "no-referrer";
+      icon.style.objectFit = "contain";
+    }
+    slot.addEventListener("click", e => {
+      e.preventDefault();
+      e.stopPropagation();
+      selectDirectoryBadge(grid, slot, info);
+    });
+    grid.appendChild(slot);
+  }
+  document.addEventListener("click", e => {
+    if (!_directorySelection || !(e.target instanceof Element)) return;
+    const tab = e.target.closest('[role="tab"]');
+    if (tab && !tab.hasAttribute(DIRECTORY_ATTR) && tab.closest(DIRECTORY_GRID_SELECTOR)) deselectDirectoryBadge();
+  }, true);
+  function warmOwnBadge(attempt) {
+    try {
+      const me = getCurrentUser();
+      if (me) {
+        fetchBadge(me.id).then(injectDirectoryBadge, () => {});
+        return;
+      }
+    } catch (e) {}
+    if (attempt < DIRECTORY_WARM_MAX_ATTEMPTS) setTimeout(() => warmOwnBadge(attempt + 1), 1e3);
+  }
   function init() {
     log("v12 tooltip + card initializing...");
     scan();
@@ -527,6 +726,7 @@
       subtree: true
     });
     setInterval(scan, 500);
+    warmOwnBadge(0);
   }
   if (document.body) init(); else document.addEventListener("DOMContentLoaded", init);
 })();
